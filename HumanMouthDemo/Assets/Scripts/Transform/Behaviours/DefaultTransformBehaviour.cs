@@ -1,3 +1,4 @@
+using ATG.Extensions;
 using UnityEngine;
 
 using UnityTransform = UnityEngine.Transform;
@@ -6,7 +7,7 @@ namespace ATG.Transform
 {
     public sealed class DefaultTransformBehaviour : ITransformBehaviour
     {
-        public static float YRotateAxisRange = 80f;
+        private static float YRotateAxisRange = 80f;
 
         private readonly UnityTransform _transform;
         private readonly TransformData _config;
@@ -38,17 +39,9 @@ namespace ATG.Transform
                                                                             _config.SetRotationSpeed * Time.deltaTime);
 
             Vector3 clampedEulerAngles = res.eulerAngles;
-
-            clampedEulerAngles.x = ClampAngle(clampedEulerAngles.x, -YRotateAxisRange, YRotateAxisRange);
+            clampedEulerAngles.x = clampedEulerAngles.x.ClampAngle(-YRotateAxisRange, YRotateAxisRange);
 
             _transform.localEulerAngles = clampedEulerAngles;
-
-            float ClampAngle(float angle, float from, float to)
-            {
-                if (angle < 0f) angle = 360 + angle;
-                if (angle > 180f) return Mathf.Max(angle, 360 + from);
-                return Mathf.Min(angle, to);
-            }
         }
     }
 }

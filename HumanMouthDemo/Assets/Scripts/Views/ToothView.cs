@@ -14,7 +14,6 @@ namespace ATG.Views
         private readonly ToothViewTweener _tweener;
 
         private bool _isChoosed;
-        private bool _isSelected;
 
         public UnityTransform ToothTransfrom { get; private set; }
 
@@ -33,7 +32,6 @@ namespace ATG.Views
         public void Select()
         {
             _outline.enabled = true;
-            _isSelected = true;
         }
 
         public void Unselect()
@@ -42,7 +40,6 @@ namespace ATG.Views
             {
                 _outline.enabled = false;
             }
-            _isSelected = false;
         }
 
         public void Choose()
@@ -78,12 +75,20 @@ namespace ATG.Views
             }
         }
 
+        #region work with tweener
+        public void Reset(Action callback = null)
+        {
+            Unchoose();
+            Unselect();
+            _tweener.Reset(callback);
+        }
         public void StartAnimate() => _tweener.Shake();
         public void StopAnimate() => _tweener.Dispose();
 
         private sealed class ToothViewTweener : IDisposable
         {
-            private const float _duration = 1f;
+            private const float _shakeDuration = 1f;
+            private const float _resetDuration = 0.4f;
             private const Ease _ease = Ease.Linear;
 
             private readonly UnityTransform _ownerTransform;
@@ -91,7 +96,7 @@ namespace ATG.Views
             private readonly Vector3 _originalLocalPosition;
             private readonly Vector3 _originalLocalEulerAngles;
 
-            private Tween _tween;
+            private Sequence _seq;
 
             public ToothViewTweener(UnityTransform owner)
             {
@@ -103,16 +108,40 @@ namespace ATG.Views
 
             public void Dispose()
             {
-                _tween?.Kill();
-                _tween = null;
+                _seq?.Kill();
+                _seq = null;
             }
 
             public void Shake()
             {
                 Dispose();
-                _tween = _ownerTransform.DOShakeRotation(_duration, 1f, 10)
-                                .SetEase(_ease).SetLoops(-1, LoopType.Yoyo);
+                _seq = DOTween.Sequence()
+                    .Append(_ownerTransform.DOShakeRotation(_shakeDuration, 1f, 10))
+                    .SetEase(_ease).SetLoops(-1, LoopType.Yoyo);
+            }
+
+            public void Reset(Action callback)
+            {
+                Dispose();
+                
+                float distance = Vector3.Distance(_ownerTransform.localPosition, _originalLocalPosition);
+                
+                if(distance > Mathf.Epsilon)
+                {
+                    _seq = DOTween.Sequence()
+                        .Append(_ownerTransform.DOLocalMove(_originalLocalPosition, _resetDuration))
+                        .Join(_ownerTransform.DOLocalRotate(_originalLocalEulerAngles, _resetDuration))
+                        .SetEase(_ease)
+                        .OnComplete(() =>  callback?.Invoke());
+                }
+                else
+                {
+                    _ownerTransform.localPosition = _originalLocalPosition;
+                    _ownerTransform.localRotation = Quaternion.Euler(_originalLocalEulerAngles);
+                    callback?.Invoke();
+                }
             }
         }
+        #endregion
     }
 }

@@ -12,19 +12,17 @@ namespace ATG.StateMachine.Views
         private readonly IInputService _inputService;
         private readonly HashSet<ToothView> _choosedTeeth;
 
-        private readonly UnityTransform _mouth;
         private readonly UnityTransform _dragParent;
 
         private readonly Action<ToothView> _setSelectTooth;
 
         public MouthViewDragTeethState(IInputService inputService, HashSet<ToothView> choosedTeed,
-            UnityTransform mouth, UnityTransform dragParent, Action<ToothView> setSelectTooth, IStateSwitcher sw)
+            UnityTransform dragParent, Action<ToothView> setSelectTooth, IStateSwitcher sw)
             : base(sw)
         {
             _inputService = inputService;
             _choosedTeeth = choosedTeed;
 
-            _mouth = mouth;
             _dragParent = dragParent;
 
             _setSelectTooth = setSelectTooth;
@@ -37,7 +35,7 @@ namespace ATG.StateMachine.Views
             foreach (var tooth in _choosedTeeth)
             {
                 tooth.SetParent(_dragParent);
-                
+
                 tooth.StartAnimate();
             }
         }
@@ -50,7 +48,7 @@ namespace ATG.StateMachine.Views
             {
                 tooth.StopAnimate();
 
-                tooth.SetParent(_mouth);
+                tooth.SetParent(null);
                 tooth.Unchoose();
                 tooth.Unselect();
             }
@@ -60,8 +58,7 @@ namespace ATG.StateMachine.Views
             _setSelectTooth?.Invoke(null);
         }
 
-        public override void Execute()
-        { }
+        public override void Execute() { }
 
         private void InputServiceEventHandler(InputEventType eventType)
         {

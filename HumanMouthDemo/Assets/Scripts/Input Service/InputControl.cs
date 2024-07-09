@@ -80,6 +80,24 @@ public partial class @InputControl: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""AllowRotate"",
+                    ""type"": ""Button"",
+                    ""id"": ""7e5c1494-756b-49b5-9e3f-ab884acfd59d"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""DisallowRotate"",
+                    ""type"": ""Button"",
+                    ""id"": ""8ebc92ea-7033-4d53-bdaf-4e9fda4ba631"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -192,6 +210,28 @@ public partial class @InputControl: IInputActionCollection2, IDisposable
                     ""action"": ""Drag"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""90b08d9d-b8a2-41ab-b7c0-f70aa09c85cc"",
+                    ""path"": ""<Keyboard>/shift"",
+                    ""interactions"": ""Press"",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""AllowRotate"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""1fd01919-a2cd-4e78-9dd2-d94c2173292d"",
+                    ""path"": ""<Keyboard>/shift"",
+                    ""interactions"": ""Press(behavior=1)"",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""DisallowRotate"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -206,6 +246,8 @@ public partial class @InputControl: IInputActionCollection2, IDisposable
         m_Input_DisallowMovement = m_Input.FindAction("DisallowMovement", throwIfNotFound: true);
         m_Input_Choose = m_Input.FindAction("Choose", throwIfNotFound: true);
         m_Input_Drag = m_Input.FindAction("Drag", throwIfNotFound: true);
+        m_Input_AllowRotate = m_Input.FindAction("AllowRotate", throwIfNotFound: true);
+        m_Input_DisallowRotate = m_Input.FindAction("DisallowRotate", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -273,6 +315,8 @@ public partial class @InputControl: IInputActionCollection2, IDisposable
     private readonly InputAction m_Input_DisallowMovement;
     private readonly InputAction m_Input_Choose;
     private readonly InputAction m_Input_Drag;
+    private readonly InputAction m_Input_AllowRotate;
+    private readonly InputAction m_Input_DisallowRotate;
     public struct InputActions
     {
         private @InputControl m_Wrapper;
@@ -283,6 +327,8 @@ public partial class @InputControl: IInputActionCollection2, IDisposable
         public InputAction @DisallowMovement => m_Wrapper.m_Input_DisallowMovement;
         public InputAction @Choose => m_Wrapper.m_Input_Choose;
         public InputAction @Drag => m_Wrapper.m_Input_Drag;
+        public InputAction @AllowRotate => m_Wrapper.m_Input_AllowRotate;
+        public InputAction @DisallowRotate => m_Wrapper.m_Input_DisallowRotate;
         public InputActionMap Get() { return m_Wrapper.m_Input; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -310,6 +356,12 @@ public partial class @InputControl: IInputActionCollection2, IDisposable
             @Drag.started += instance.OnDrag;
             @Drag.performed += instance.OnDrag;
             @Drag.canceled += instance.OnDrag;
+            @AllowRotate.started += instance.OnAllowRotate;
+            @AllowRotate.performed += instance.OnAllowRotate;
+            @AllowRotate.canceled += instance.OnAllowRotate;
+            @DisallowRotate.started += instance.OnDisallowRotate;
+            @DisallowRotate.performed += instance.OnDisallowRotate;
+            @DisallowRotate.canceled += instance.OnDisallowRotate;
         }
 
         private void UnregisterCallbacks(IInputActions instance)
@@ -332,6 +384,12 @@ public partial class @InputControl: IInputActionCollection2, IDisposable
             @Drag.started -= instance.OnDrag;
             @Drag.performed -= instance.OnDrag;
             @Drag.canceled -= instance.OnDrag;
+            @AllowRotate.started -= instance.OnAllowRotate;
+            @AllowRotate.performed -= instance.OnAllowRotate;
+            @AllowRotate.canceled -= instance.OnAllowRotate;
+            @DisallowRotate.started -= instance.OnDisallowRotate;
+            @DisallowRotate.performed -= instance.OnDisallowRotate;
+            @DisallowRotate.canceled -= instance.OnDisallowRotate;
         }
 
         public void RemoveCallbacks(IInputActions instance)
@@ -357,5 +415,7 @@ public partial class @InputControl: IInputActionCollection2, IDisposable
         void OnDisallowMovement(InputAction.CallbackContext context);
         void OnChoose(InputAction.CallbackContext context);
         void OnDrag(InputAction.CallbackContext context);
+        void OnAllowRotate(InputAction.CallbackContext context);
+        void OnDisallowRotate(InputAction.CallbackContext context);
     }
 }

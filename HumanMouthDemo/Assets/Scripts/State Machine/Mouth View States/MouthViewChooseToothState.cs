@@ -10,7 +10,7 @@ namespace ATG.StateMachine.Views
     public sealed class MouthViewChooseToothState : Statement
     {
         public const int MaxChooseToothCount = 3;
-        
+
         private readonly IInputService _inputService;
 
         private readonly HashSet<ToothView> _choosedTeeth;
@@ -40,51 +40,56 @@ namespace ATG.StateMachine.Views
 
         private void InputServiceEventHandler(InputEventType eventType)
         {
-            switch(eventType)
+            switch (eventType)
             {
                 case InputEventType.Choose:
                     ChooseTooth();
                     break;
                 case InputEventType.Drag:
-                    ChooseTooth(true);
+                    var selected = _getSelectedTooth?.Invoke() ?? null;
+                    if (selected != null)
+                    {
+                        if (_choosedTeeth.Contains(selected) == false)
+                        {
+                            ChooseTooth();
+                        }
+                    }
                     SwitchToDrag();
                     break;
             }
         }
 
-        private void ChooseTooth(bool igoreEquals = false)
-        {   
+        private void ChooseTooth()
+        {
             ToothView? lastSelectedTooth = _getSelectedTooth?.Invoke() ?? null;
 
-            if(lastSelectedTooth == null) return;
+            if (lastSelectedTooth == null) return;
 
-            if(igoreEquals == false)
+            if (_choosedTeeth.Contains(lastSelectedTooth))
             {
-                if(_choosedTeeth.Contains(lastSelectedTooth))
-                {
-                    lastSelectedTooth.Unchoose();
-                    _choosedTeeth.Remove(lastSelectedTooth);
-                    
-                    return;
-                }
+                lastSelectedTooth.Unchoose();
+                _choosedTeeth.Remove(lastSelectedTooth);
+
+                return;
             }
-            
-            if(_choosedTeeth.Count >= MaxChooseToothCount)
+
+
+            if (_choosedTeeth.Count >= MaxChooseToothCount)
             {
-                foreach(var tooth in _choosedTeeth)
+                foreach (var tooth in _choosedTeeth)
                 {
                     tooth.Unchoose();
                     tooth.Unselect();
                 }
                 _choosedTeeth.Clear();
             }
-            
+
             lastSelectedTooth.Choose();
             _choosedTeeth.Add(lastSelectedTooth);
         }
         private void SwitchToDrag()
         {
-            if(_choosedTeeth.Count == 0) return;
+            if (_choosedTeeth.Count == 0) return;
             _stateSwitcher.SwitchState<MouthViewDragTeethState>();
         }
     }

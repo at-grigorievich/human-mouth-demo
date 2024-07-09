@@ -12,6 +12,8 @@ namespace ATG.Input
         public Vector2 KeyboardAxis => _inputControl?.Input.Move.ReadValue<Vector2>() ?? Vector2.zero;
         public Vector2 MouseAxis => _inputControl?.Input.Rotate.ReadValue<Vector2>() ?? Vector2.zero;
 
+        public bool IsAllowMovement { get; private set; }
+
         public event Action<InputEventType> OnInputEvent;
 
         public InputService(InputControl inputControl)
@@ -41,6 +43,8 @@ namespace ATG.Input
             _inputControl.Input.DisallowMovement.performed += OnDisallowMovement;
             _inputControl.Input.Choose.performed += OnChoose;
             _inputControl.Input.Drag.performed += OnDrag;
+            _inputControl.Input.AllowRotate.performed += OnAllowRotate;
+            _inputControl.Input.DisallowRotate.performed += OnDisallowRotate;
         }
 
         private void DisableInputControl()
@@ -51,16 +55,24 @@ namespace ATG.Input
             _inputControl.Input.DisallowMovement.performed -= OnDisallowMovement;
             _inputControl.Input.Choose.performed -= OnChoose;
             _inputControl.Input.Drag.performed -= OnDrag;
+            _inputControl.Input.AllowRotate.performed -= OnAllowRotate;
+            _inputControl.Input.DisallowRotate.performed -= OnDisallowRotate;
+
+            IsAllowMovement = false;
         }
 
         private void OnAllowMovement(InputAction.CallbackContext _)
         {
             OnInputEvent?.Invoke(InputEventType.AllowMovement);
+
+            IsAllowMovement = true;
         }
 
         private void OnDisallowMovement(InputAction.CallbackContext _)
         {
             OnInputEvent?.Invoke(InputEventType.DisallowMovement);
+
+            IsAllowMovement = false;
         }
 
         private void OnChoose(InputAction.CallbackContext _)
@@ -71,6 +83,16 @@ namespace ATG.Input
         private void OnDrag(InputAction.CallbackContext _)
         {
             OnInputEvent?.Invoke(InputEventType.Drag);
+        }
+
+        private void OnAllowRotate(InputAction.CallbackContext _)
+        {
+            OnInputEvent?.Invoke(InputEventType.AllowRotate);
+        }
+
+        private void OnDisallowRotate(InputAction.CallbackContext _)
+        {
+            OnInputEvent?.Invoke(InputEventType.DisallowRotate);
         }
     }
 }
