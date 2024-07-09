@@ -9,8 +9,8 @@ namespace ATG.Input
     {
         private readonly InputControl _inputControl;
 
-        public Vector2 KeyboardAxis => _inputControl?.Movement.Axis.ReadValue<Vector2>() ?? Vector2.zero;
-        public Vector2 MouseAxis => _inputControl?.Movement.Rotate.ReadValue<Vector2>() ?? Vector2.zero;
+        public Vector2 KeyboardAxis => _inputControl?.Input.Move.ReadValue<Vector2>() ?? Vector2.zero;
+        public Vector2 MouseAxis => _inputControl?.Input.Rotate.ReadValue<Vector2>() ?? Vector2.zero;
 
         public event Action<InputEventType> OnInputEvent;
 
@@ -37,16 +37,20 @@ namespace ATG.Input
         {
             _inputControl.Enable();
 
-            _inputControl.Movement.AllowMovement.performed += OnAllowMovement;
-            _inputControl.Movement.DisallowMovement.performed += OnDisallowMovement;
+            _inputControl.Input.AllowMovement.performed += OnAllowMovement;
+            _inputControl.Input.DisallowMovement.performed += OnDisallowMovement;
+            _inputControl.Input.Choose.performed += OnChoose;
+            _inputControl.Input.Drag.performed += OnDrag;
         }
 
         private void DisableInputControl()
         {
             _inputControl.Disable();
 
-            _inputControl.Movement.AllowMovement.performed -= OnAllowMovement;
-            _inputControl.Movement.DisallowMovement.performed -= OnDisallowMovement;
+            _inputControl.Input.AllowMovement.performed -= OnAllowMovement;
+            _inputControl.Input.DisallowMovement.performed -= OnDisallowMovement;
+            _inputControl.Input.Choose.performed -= OnChoose;
+            _inputControl.Input.Drag.performed -= OnDrag;
         }
 
         private void OnAllowMovement(InputAction.CallbackContext _)
@@ -57,6 +61,16 @@ namespace ATG.Input
         private void OnDisallowMovement(InputAction.CallbackContext _)
         {
             OnInputEvent?.Invoke(InputEventType.DisallowMovement);
+        }
+
+        private void OnChoose(InputAction.CallbackContext _)
+        {
+            OnInputEvent?.Invoke(InputEventType.Choose);
+        }
+
+        private void OnDrag(InputAction.CallbackContext _)
+        {
+            OnInputEvent?.Invoke(InputEventType.Drag);
         }
     }
 }

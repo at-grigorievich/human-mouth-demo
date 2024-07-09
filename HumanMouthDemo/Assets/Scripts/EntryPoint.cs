@@ -5,33 +5,36 @@ using ATG.Update;
 using ATG.Views;
 using UnityEngine;
 
-namespace ATG.MonthTrainer
+namespace ATG.MouthTrainer
 {
     public sealed class EntryPoint : MonoBehaviour
     {
         [SerializeField] private UpdateService updService;
         [SerializeField] private CameraViewFactory cameraViewFactory;
+        [SerializeField] private MouthViewFactory mouthViewFactory;
 
         private CameraView _cameraViewInstance = null!;
-        private InputService _movementInput = null!;
+        private MouthView _mouthViewInstance = null!;
 
+        private InputService _inputService = null!;
+    
         private void Awake()
         {
             InputControl inputControl = new InputControl();
-            _movementInput = new InputService(inputControl);
+            _inputService = new InputService(inputControl);
 
-            _cameraViewInstance = cameraViewFactory.Create(_movementInput);
+            _mouthViewInstance = mouthViewFactory.Create(_inputService);
+            _cameraViewInstance = cameraViewFactory.Create(_inputService, _mouthViewInstance);
         }
 
         private void Start()
         {
-            Cursor.lockState = CursorLockMode.Locked;
-
             updService.Add(_cameraViewInstance);
 
-            _movementInput.SetActive(true);
+            _inputService.SetActive(true);
             _cameraViewInstance.SetActive(true);
-            
+            _mouthViewInstance.SetActive(true);
+
             updService.SetActive(true);
         }
     }

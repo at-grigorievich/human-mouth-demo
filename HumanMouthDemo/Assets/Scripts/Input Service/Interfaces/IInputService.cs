@@ -7,7 +7,9 @@ namespace ATG.Input
     {
         None = 0,
         AllowMovement = 1,
-        DisallowMovement = 2
+        DisallowMovement = 2,
+        Choose = 3,
+        Drag = 4
     }
 
     public interface IInputService

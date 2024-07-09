@@ -1,6 +1,7 @@
 using System;
 using ATG.Activation;
 using ATG.Input;
+using ATG.Raycasting;
 using ATG.StateMachine.Views;
 using ATG.Transform;
 using ATG.Update;
@@ -15,25 +16,32 @@ namespace ATG.Views
     {
         [SerializeField] private Camera camera;
         [SerializeField] private TransformData cameraTransformConfig;
+        [SerializeField] private RaycastData raycastData;
 
-        public CameraView Create(IInputService inputService) =>
-            new CameraView(camera, cameraTransformConfig, inputService);
+        public CameraView Create(IInputService inputService, MouthView mouthView)
+        {
+            IRaycastService raycastService = new RaycastService(camera.transform, raycastData);
+            
+            return new CameraView(camera, mouthView, cameraTransformConfig, inputService, raycastService);
+        }
     }
 
     public class CameraView : ActivateObject, IUpdateable
     {
         private readonly Camera _camera;
-
+        private readonly IRaycastHandler _toothRaycastHandler;
         private readonly SM _sm;
 
-        public CameraView(Camera camera, TransformData transformConfig, 
-                                                IInputService inputService)
+        public CameraView(Camera camera, MouthView mouthView, TransformData transformConfig, 
+                IInputService inputService, IRaycastService raycastService)
         {
             _camera = camera;
 
             ITransformBehaviour transformBehaviour = 
                 new DefaultTransformBehaviour(_camera.transform, transformConfig);
-            
+                
+            _toothRaycastHandler = new ToothRaycastHandler(raycastService, mouthView);
+
             _sm = new SM();
             _sm.AddStatementsRange
             (
@@ -50,8 +58,6 @@ namespace ATG.Views
         {
             base.SetActive(isActive);
 
-            _camera.enabled = isActive;
-
             if(isActive == true)
             {
                 _sm.StartOrContinueMachine();
@@ -60,6 +66,8 @@ namespace ATG.Views
             {
                 _sm.PauseMachine();
             }
+
+            _camera.enabled = isActive;
         }
 
         public void Update()
@@ -67,6 +75,8 @@ namespace ATG.Views
             if(IsActive == false) return;
 
             _sm.ExecuteMachine();
+
+            _toothRaycastHandler.Update();
         }
     }
 }

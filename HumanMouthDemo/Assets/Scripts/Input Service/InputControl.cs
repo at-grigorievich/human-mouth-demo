@@ -24,11 +24,11 @@ public partial class @InputControl: IInputActionCollection2, IDisposable
     ""name"": ""InputControl"",
     ""maps"": [
         {
-            ""name"": ""Movement"",
+            ""name"": ""Input"",
             ""id"": ""f3055a13-5ee7-4b79-b7fe-801b73cdcf53"",
             ""actions"": [
                 {
-                    ""name"": ""Axis"",
+                    ""name"": ""Move"",
                     ""type"": ""Value"",
                     ""id"": ""a4031a0d-fa67-4967-929c-4ed4c6e230ba"",
                     ""expectedControlType"": ""Vector2"",
@@ -62,6 +62,24 @@ public partial class @InputControl: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Choose"",
+                    ""type"": ""Button"",
+                    ""id"": ""39e6db99-762f-4615-a18a-54852c3d9aed"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Drag"",
+                    ""type"": ""Button"",
+                    ""id"": ""3c821261-b7a8-4224-9d27-7bd1e4d44d7c"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -72,7 +90,7 @@ public partial class @InputControl: IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""Axis"",
+                    ""action"": ""Move"",
                     ""isComposite"": true,
                     ""isPartOfComposite"": false
                 },
@@ -83,7 +101,7 @@ public partial class @InputControl: IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""Axis"",
+                    ""action"": ""Move"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
                 },
@@ -94,7 +112,7 @@ public partial class @InputControl: IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""Axis"",
+                    ""action"": ""Move"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
                 },
@@ -105,7 +123,7 @@ public partial class @InputControl: IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""Axis"",
+                    ""action"": ""Move"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
                 },
@@ -116,7 +134,7 @@ public partial class @InputControl: IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""Axis"",
+                    ""action"": ""Move"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
                 },
@@ -152,18 +170,42 @@ public partial class @InputControl: IInputActionCollection2, IDisposable
                     ""action"": ""DisallowMovement"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""a35bd612-869f-4fc8-8412-33833cc480ab"",
+                    ""path"": ""<Mouse>/leftButton"",
+                    ""interactions"": ""Press(behavior=1)"",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Choose"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""b4b6cbec-1630-428d-bdd2-49d686da9e98"",
+                    ""path"": ""<Mouse>/press"",
+                    ""interactions"": ""Hold(duration=0.3)"",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Drag"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
     ],
     ""controlSchemes"": []
 }");
-        // Movement
-        m_Movement = asset.FindActionMap("Movement", throwIfNotFound: true);
-        m_Movement_Axis = m_Movement.FindAction("Axis", throwIfNotFound: true);
-        m_Movement_Rotate = m_Movement.FindAction("Rotate", throwIfNotFound: true);
-        m_Movement_AllowMovement = m_Movement.FindAction("AllowMovement", throwIfNotFound: true);
-        m_Movement_DisallowMovement = m_Movement.FindAction("DisallowMovement", throwIfNotFound: true);
+        // Input
+        m_Input = asset.FindActionMap("Input", throwIfNotFound: true);
+        m_Input_Move = m_Input.FindAction("Move", throwIfNotFound: true);
+        m_Input_Rotate = m_Input.FindAction("Rotate", throwIfNotFound: true);
+        m_Input_AllowMovement = m_Input.FindAction("AllowMovement", throwIfNotFound: true);
+        m_Input_DisallowMovement = m_Input.FindAction("DisallowMovement", throwIfNotFound: true);
+        m_Input_Choose = m_Input.FindAction("Choose", throwIfNotFound: true);
+        m_Input_Drag = m_Input.FindAction("Drag", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -222,33 +264,37 @@ public partial class @InputControl: IInputActionCollection2, IDisposable
         return asset.FindBinding(bindingMask, out action);
     }
 
-    // Movement
-    private readonly InputActionMap m_Movement;
-    private List<IMovementActions> m_MovementActionsCallbackInterfaces = new List<IMovementActions>();
-    private readonly InputAction m_Movement_Axis;
-    private readonly InputAction m_Movement_Rotate;
-    private readonly InputAction m_Movement_AllowMovement;
-    private readonly InputAction m_Movement_DisallowMovement;
-    public struct MovementActions
+    // Input
+    private readonly InputActionMap m_Input;
+    private List<IInputActions> m_InputActionsCallbackInterfaces = new List<IInputActions>();
+    private readonly InputAction m_Input_Move;
+    private readonly InputAction m_Input_Rotate;
+    private readonly InputAction m_Input_AllowMovement;
+    private readonly InputAction m_Input_DisallowMovement;
+    private readonly InputAction m_Input_Choose;
+    private readonly InputAction m_Input_Drag;
+    public struct InputActions
     {
         private @InputControl m_Wrapper;
-        public MovementActions(@InputControl wrapper) { m_Wrapper = wrapper; }
-        public InputAction @Axis => m_Wrapper.m_Movement_Axis;
-        public InputAction @Rotate => m_Wrapper.m_Movement_Rotate;
-        public InputAction @AllowMovement => m_Wrapper.m_Movement_AllowMovement;
-        public InputAction @DisallowMovement => m_Wrapper.m_Movement_DisallowMovement;
-        public InputActionMap Get() { return m_Wrapper.m_Movement; }
+        public InputActions(@InputControl wrapper) { m_Wrapper = wrapper; }
+        public InputAction @Move => m_Wrapper.m_Input_Move;
+        public InputAction @Rotate => m_Wrapper.m_Input_Rotate;
+        public InputAction @AllowMovement => m_Wrapper.m_Input_AllowMovement;
+        public InputAction @DisallowMovement => m_Wrapper.m_Input_DisallowMovement;
+        public InputAction @Choose => m_Wrapper.m_Input_Choose;
+        public InputAction @Drag => m_Wrapper.m_Input_Drag;
+        public InputActionMap Get() { return m_Wrapper.m_Input; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
         public bool enabled => Get().enabled;
-        public static implicit operator InputActionMap(MovementActions set) { return set.Get(); }
-        public void AddCallbacks(IMovementActions instance)
+        public static implicit operator InputActionMap(InputActions set) { return set.Get(); }
+        public void AddCallbacks(IInputActions instance)
         {
-            if (instance == null || m_Wrapper.m_MovementActionsCallbackInterfaces.Contains(instance)) return;
-            m_Wrapper.m_MovementActionsCallbackInterfaces.Add(instance);
-            @Axis.started += instance.OnAxis;
-            @Axis.performed += instance.OnAxis;
-            @Axis.canceled += instance.OnAxis;
+            if (instance == null || m_Wrapper.m_InputActionsCallbackInterfaces.Contains(instance)) return;
+            m_Wrapper.m_InputActionsCallbackInterfaces.Add(instance);
+            @Move.started += instance.OnMove;
+            @Move.performed += instance.OnMove;
+            @Move.canceled += instance.OnMove;
             @Rotate.started += instance.OnRotate;
             @Rotate.performed += instance.OnRotate;
             @Rotate.canceled += instance.OnRotate;
@@ -258,13 +304,19 @@ public partial class @InputControl: IInputActionCollection2, IDisposable
             @DisallowMovement.started += instance.OnDisallowMovement;
             @DisallowMovement.performed += instance.OnDisallowMovement;
             @DisallowMovement.canceled += instance.OnDisallowMovement;
+            @Choose.started += instance.OnChoose;
+            @Choose.performed += instance.OnChoose;
+            @Choose.canceled += instance.OnChoose;
+            @Drag.started += instance.OnDrag;
+            @Drag.performed += instance.OnDrag;
+            @Drag.canceled += instance.OnDrag;
         }
 
-        private void UnregisterCallbacks(IMovementActions instance)
+        private void UnregisterCallbacks(IInputActions instance)
         {
-            @Axis.started -= instance.OnAxis;
-            @Axis.performed -= instance.OnAxis;
-            @Axis.canceled -= instance.OnAxis;
+            @Move.started -= instance.OnMove;
+            @Move.performed -= instance.OnMove;
+            @Move.canceled -= instance.OnMove;
             @Rotate.started -= instance.OnRotate;
             @Rotate.performed -= instance.OnRotate;
             @Rotate.canceled -= instance.OnRotate;
@@ -274,28 +326,36 @@ public partial class @InputControl: IInputActionCollection2, IDisposable
             @DisallowMovement.started -= instance.OnDisallowMovement;
             @DisallowMovement.performed -= instance.OnDisallowMovement;
             @DisallowMovement.canceled -= instance.OnDisallowMovement;
+            @Choose.started -= instance.OnChoose;
+            @Choose.performed -= instance.OnChoose;
+            @Choose.canceled -= instance.OnChoose;
+            @Drag.started -= instance.OnDrag;
+            @Drag.performed -= instance.OnDrag;
+            @Drag.canceled -= instance.OnDrag;
         }
 
-        public void RemoveCallbacks(IMovementActions instance)
+        public void RemoveCallbacks(IInputActions instance)
         {
-            if (m_Wrapper.m_MovementActionsCallbackInterfaces.Remove(instance))
+            if (m_Wrapper.m_InputActionsCallbackInterfaces.Remove(instance))
                 UnregisterCallbacks(instance);
         }
 
-        public void SetCallbacks(IMovementActions instance)
+        public void SetCallbacks(IInputActions instance)
         {
-            foreach (var item in m_Wrapper.m_MovementActionsCallbackInterfaces)
+            foreach (var item in m_Wrapper.m_InputActionsCallbackInterfaces)
                 UnregisterCallbacks(item);
-            m_Wrapper.m_MovementActionsCallbackInterfaces.Clear();
+            m_Wrapper.m_InputActionsCallbackInterfaces.Clear();
             AddCallbacks(instance);
         }
     }
-    public MovementActions @Movement => new MovementActions(this);
-    public interface IMovementActions
+    public InputActions @Input => new InputActions(this);
+    public interface IInputActions
     {
-        void OnAxis(InputAction.CallbackContext context);
+        void OnMove(InputAction.CallbackContext context);
         void OnRotate(InputAction.CallbackContext context);
         void OnAllowMovement(InputAction.CallbackContext context);
         void OnDisallowMovement(InputAction.CallbackContext context);
+        void OnChoose(InputAction.CallbackContext context);
+        void OnDrag(InputAction.CallbackContext context);
     }
 }

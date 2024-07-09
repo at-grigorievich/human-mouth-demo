@@ -1,6 +1,5 @@
-using System.Diagnostics;
 using ATG.Input;
-using ATG.Transform;
+using UnityEngine;
 
 namespace ATG.StateMachine.Views
 {
@@ -15,6 +14,7 @@ namespace ATG.StateMachine.Views
 
         public override void Enter()
         {
+            Cursor.lockState = CursorLockMode.None;
             _inputService.OnInputEvent += InputServiceEventHandler;
         }
 
