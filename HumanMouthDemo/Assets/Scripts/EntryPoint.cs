@@ -79,5 +79,11 @@ namespace ATG.MouthTrainer
 
             updService.SetActive(false);
         }
+
+        [ContextMenu("Remove saves")]
+        public void RemoveSaves()
+        {
+            BinnarySerializationService.Delete(MouthTransformDTO.FilePath);
+        }
     }
 }

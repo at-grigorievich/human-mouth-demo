@@ -36,5 +36,17 @@ namespace ATG.Serialization
             Debug.Log("finish writing...");
 #endif
         }
+
+        public static void Delete(string path)
+        {
+            if (File.Exists(path))
+            {
+                File.Delete(path);
+            }
+
+#if UNITY_EDITOR
+            Debug.Log("finish deleting...");
+#endif
+        }
     }
 }
