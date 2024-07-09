@@ -1,15 +1,18 @@
+#nullable enable
+
 using System;
 using System.Collections.Generic;
 using ATG.Activation;
 using ATG.Input;
 using ATG.StateMachine.Views;
+using ATG.Transform;
+using ATG.Update;
+using ATG.DTO;
+using ATG.Serialization;
 using UnityEngine;
 
 using UnityTransform = UnityEngine.Transform;
 using SM = ATG.StateMachine.StateMachine;
-using ATG.Transform;
-using ATG.Update;
-
 namespace ATG.Views
 {
     [Serializable]
@@ -25,7 +28,7 @@ namespace ATG.Views
         public MouthView Create(IInputService inputService)
         {
             Dictionary<int, ToothView> data = new();
-
+            
             for (int i = 0; i < teethes.Length; i++)
             {
                 GameObject toothObject = teethes[i];
@@ -46,6 +49,9 @@ namespace ATG.Views
                 data.Add(toothObject.GetHashCode(),
                     new ToothView(outline, collider, toothObject.transform));
             }
+            
+            MouthTransformDTO? dto = BinnarySerializationService.Read<MouthTransformDTO>(MouthTransformDTO.FilePath);
+            dto?.SetupTransform(mouthTransform);
 
             ITransformBehaviour transformBehaviour = new OnlyRotateTransformBehaviour(mouthTransform, config);
 
@@ -55,30 +61,28 @@ namespace ATG.Views
 
     public class MouthView : ActivateObject, IUpdateable
     {
-        private readonly IReadOnlyDictionary<int, ToothView> _teethes;
+        private readonly TeethSet _set;
 
         private readonly SM _sm;
         private readonly SM _transformSM;
 
-        private readonly HashSet<ToothView> _choosedTeeth;
-        private ToothView _lastSelectedTooth;
-
+        public readonly UnityTransform Transform;
+        
         public MouthView(IInputService inputService, ITransformBehaviour transformBehaviour,
-            IReadOnlyDictionary<int, ToothView> teethes,
+            IReadOnlyDictionary<int, ToothView> teeth,
             UnityTransform mouthTransform, UnityTransform dragParentTransform)
         {
-            _teethes = teethes;
-            _choosedTeeth = new HashSet<ToothView>();
+            Transform = mouthTransform;
 
+            _set = new TeethSet(teeth);
             _sm = new SM();
             _transformSM = new SM();
 
             _sm.AddStatementsRange
             (
-                new MouthViewChooseToothState(_choosedTeeth, inputService, () => _lastSelectedTooth, _sm),
-                new MouthViewDragTeethState(inputService, _choosedTeeth, dragParentTransform,
-                    foo => _lastSelectedTooth = foo, _sm),
-                new MouthViewResetToothState(_teethes.Values, mouthTransform, _sm)
+                new MouthViewChooseToothState(_set, inputService, _sm),
+                new MouthViewDragTeethState(inputService, _set, dragParentTransform, _sm),
+                new MouthViewResetToothState(_set, mouthTransform, _sm)
             );
 
             _transformSM.AddStatementsRange(new MouthViewRotateState(transformBehaviour, inputService, _sm));
@@ -93,10 +97,7 @@ namespace ATG.Views
         {
             base.SetActive(isActive);
 
-            foreach (var teeth in _teethes.Values)
-            {
-                teeth.SetActive(isActive);
-            }
+            _set.SetActive(isActive);
 
             if (isActive)
             {
@@ -120,29 +121,10 @@ namespace ATG.Views
 
         public void Reset()
         {
-            _choosedTeeth.Clear();
-            _lastSelectedTooth = null;
+            _set.Reset();
             _sm.SwitchState<MouthViewResetToothState>();
         }
-        public void SelectTooth(GameObject hittedObject)
-        {
-            if (hittedObject == null || _teethes.ContainsKey(hittedObject.GetHashCode()) == false)
-            {
-                _lastSelectedTooth?.Unselect();
-                _lastSelectedTooth = null;
-
-                return;
-            }
-
-            var newSelected = _teethes[hittedObject.GetHashCode()];
-
-            if (ReferenceEquals(newSelected, _lastSelectedTooth)) return;
-
-            _lastSelectedTooth?.Unselect();
-            _lastSelectedTooth = newSelected;
-
-            _lastSelectedTooth.Select();
-        }
+        public void SelectTooth(GameObject hittedObject) => _set.SelectTooth(hittedObject);
 
     }
 }

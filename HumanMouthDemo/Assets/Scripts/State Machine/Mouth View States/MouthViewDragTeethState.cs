@@ -1,7 +1,5 @@
 using ATG.Input;
 using ATG.Views;
-using System;
-using System.Collections.Generic;
 
 using UnityTransform = UnityEngine.Transform;
 
@@ -10,29 +8,25 @@ namespace ATG.StateMachine.Views
     public sealed class MouthViewDragTeethState : Statement
     {
         private readonly IInputService _inputService;
-        private readonly HashSet<ToothView> _choosedTeeth;
+        private readonly TeethSet _set;
 
         private readonly UnityTransform _dragParent;
 
-        private readonly Action<ToothView> _setSelectTooth;
 
-        public MouthViewDragTeethState(IInputService inputService, HashSet<ToothView> choosedTeed,
-            UnityTransform dragParent, Action<ToothView> setSelectTooth, IStateSwitcher sw)
-            : base(sw)
+        public MouthViewDragTeethState(IInputService inputService, TeethSet set,UnityTransform dragParent, 
+            IStateSwitcher sw) : base(sw)
         {
             _inputService = inputService;
-            _choosedTeeth = choosedTeed;
+            _set = set;
 
             _dragParent = dragParent;
-
-            _setSelectTooth = setSelectTooth;
         }
 
         public override void Enter()
         {
             _inputService.OnInputEvent += InputServiceEventHandler;
 
-            foreach (var tooth in _choosedTeeth)
+            foreach (var tooth in _set.GetChoosedEnumerable())
             {
                 tooth.SetParent(_dragParent);
 
@@ -44,7 +38,7 @@ namespace ATG.StateMachine.Views
         {
             _inputService.OnInputEvent -= InputServiceEventHandler;
 
-            foreach (var tooth in _choosedTeeth)
+            foreach (var tooth in _set.GetChoosedEnumerable())
             {
                 tooth.StopAnimate();
 
@@ -53,9 +47,9 @@ namespace ATG.StateMachine.Views
                 tooth.Unselect();
             }
 
-            _choosedTeeth.Clear();
+            _set.ChoosedClear();
 
-            _setSelectTooth?.Invoke(null);
+            _set.ClearSelectedTooth();
         }
 
         public override void Execute() { }

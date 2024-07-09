@@ -1885,8 +1885,7 @@ Transform:
   m_LocalPosition: {x: 5.56, y: 2.99, z: 10.38}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 1634971437}
+  m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 15, y: -152.1, z: -0.78}
 --- !u!1 &1332730057 stripped
@@ -5209,6 +5208,7 @@ MonoBehaviour:
   mouthViewFactory:
     mouthTransform: {fileID: 1178402754}
     dragParentTransform: {fileID: 1317355860}
+    config: {fileID: 0}
     teethes:
     - {fileID: 1890053902}
     - {fileID: 1607261169}
@@ -5695,50 +5695,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1631754531}
   m_CullTransparentMesh: 1
---- !u!1 &1634971435
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1634971437}
-  - component: {fileID: 1634971436}
-  m_Layer: 0
-  m_Name: raycast test
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &1634971436
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1634971435}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d404429dda098234eb301760963657bf, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!4 &1634971437
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1634971435}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0.12504664, y: 0.2398693, z: -0.038015395, w: -0.96196723}
-  m_LocalPosition: {x: 3.1285124, y: -1.2481413, z: 10.895594}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1317355860}
-  m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
 --- !u!1 &1730931873 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 5681955093326987265, guid: 0d0b2fcfb49dc384bb2e2d3a3a9a3075, type: 3}

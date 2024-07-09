@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using ATG.Views;
 
 using UnityTransform = UnityEngine.Transform;
@@ -7,21 +6,20 @@ namespace ATG.StateMachine.Views
 {
     public sealed class MouthViewResetToothState : Statement
     {
-        private readonly IEnumerable<ToothView> _allTeeth;
+        private readonly TeethSet _set;
         private readonly UnityTransform _mouth;
 
         private int _resetTeethCount;
 
-        public MouthViewResetToothState(IEnumerable<ToothView> allTeeth, UnityTransform mouth, IStateSwitcher sw) 
-            : base(sw)
+        public MouthViewResetToothState(TeethSet set, UnityTransform mouth, IStateSwitcher sw): base(sw)
         {
-            _allTeeth = allTeeth;
+            _set = set;
             _mouth = mouth;
         }
 
         public override void Enter()
         {
-            foreach (var tooth in _allTeeth)
+            foreach (var tooth in _set.GetEnumerable())
             {
                 tooth.SetParent(_mouth);
                 tooth.Reset(OnToothReset);

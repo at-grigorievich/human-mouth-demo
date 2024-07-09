@@ -13,17 +13,13 @@ namespace ATG.StateMachine.Views
 
         private readonly IInputService _inputService;
 
-        private readonly HashSet<ToothView> _choosedTeeth;
+        private readonly TeethSet _set;
 
-        private readonly Func<ToothView?> _getSelectedTooth;
-
-        public MouthViewChooseToothState(HashSet<ToothView> choosedTeeth, IInputService inputService,
-             Func<ToothView?> getSelectedTooth, IStateSwitcher sw) : base(sw)
+        public MouthViewChooseToothState(TeethSet set, IInputService inputService, IStateSwitcher sw) : base(sw)
         {
             _inputService = inputService;
 
-            _choosedTeeth = choosedTeeth;
-            _getSelectedTooth = getSelectedTooth;
+            _set = set;
         }
 
         public override void Enter()
@@ -46,10 +42,9 @@ namespace ATG.StateMachine.Views
                     ChooseTooth();
                     break;
                 case InputEventType.Drag:
-                    var selected = _getSelectedTooth?.Invoke() ?? null;
-                    if (selected != null)
+                    if (_set.LastSelectedTooth != null)
                     {
-                        if (_choosedTeeth.Contains(selected) == false)
+                        if (_set.ChoosedContains(_set.LastSelectedTooth) == false)
                         {
                             ChooseTooth();
                         }
@@ -61,35 +56,35 @@ namespace ATG.StateMachine.Views
 
         private void ChooseTooth()
         {
-            ToothView? lastSelectedTooth = _getSelectedTooth?.Invoke() ?? null;
+            ToothView? lastSelectedTooth = _set.LastSelectedTooth;
 
             if (lastSelectedTooth == null) return;
 
-            if (_choosedTeeth.Contains(lastSelectedTooth))
+            if (_set.ChoosedContains(lastSelectedTooth) == true)
             {
                 lastSelectedTooth.Unchoose();
-                _choosedTeeth.Remove(lastSelectedTooth);
+                _set.ChoosedRemove(lastSelectedTooth);
 
                 return;
             }
 
 
-            if (_choosedTeeth.Count >= MaxChooseToothCount)
+            if (_set.ChoosedCount >= MaxChooseToothCount)
             {
-                foreach (var tooth in _choosedTeeth)
+                foreach (var tooth in _set.GetChoosedEnumerable())
                 {
                     tooth.Unchoose();
                     tooth.Unselect();
                 }
-                _choosedTeeth.Clear();
+                _set.ChoosedClear();
             }
 
             lastSelectedTooth.Choose();
-            _choosedTeeth.Add(lastSelectedTooth);
+            _set.ChoosedAdd(lastSelectedTooth);
         }
         private void SwitchToDrag()
         {
-            if (_choosedTeeth.Count == 0) return;
+            if (_set.ChoosedCount == 0) return;
             _stateSwitcher.SwitchState<MouthViewDragTeethState>();
         }
     }

@@ -1,7 +1,10 @@
 #nullable enable
 
 using System;
+using ATG.DTO;
+using ATG.Extensions;
 using ATG.Input;
+using ATG.Serialization;
 using ATG.UI;
 using ATG.Update;
 using ATG.Views;
@@ -48,6 +51,9 @@ namespace ATG.MouthTrainer
 
             _uiManager.AddQuitButtonCallback(Quit);
             _uiManager.AddResetButtonCallback(_mouthViewInstance.Reset);
+            _uiManager.AddSaveButtonCallback(
+                () => BinnarySerializationService
+                .Write(MouthTransformDTO.FilePath, _mouthViewInstance.GetDataTrasfer()));
 
             _uiManager.SetActive(true);
         }
