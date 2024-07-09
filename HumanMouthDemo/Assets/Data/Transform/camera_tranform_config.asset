@@ -13,4 +13,4 @@ MonoBehaviour:
   m_Name: camera_tranform_config
   m_EditorClassIdentifier: 
   <SetPositionSpeed>k__BackingField: 5
-  <SetRotationSpeed>k__BackingField: 120
+  <SetRotationSpeed>k__BackingField: 110
