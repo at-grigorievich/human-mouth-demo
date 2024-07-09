@@ -36,7 +36,9 @@ namespace ATG.StateMachine.Views
 
             foreach (var tooth in _choosedTeeth)
             {
-                tooth.ToothTransfrom.SetParent(_dragParent);
+                tooth.SetParent(_dragParent);
+                
+                tooth.StartAnimate();
             }
         }
 
@@ -46,7 +48,9 @@ namespace ATG.StateMachine.Views
 
             foreach (var tooth in _choosedTeeth)
             {
-                tooth.ToothTransfrom.SetParent(_mouth);
+                tooth.StopAnimate();
+
+                tooth.SetParent(_mouth);
                 tooth.Unchoose();
                 tooth.Unselect();
             }
