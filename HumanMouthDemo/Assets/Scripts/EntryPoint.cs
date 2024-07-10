@@ -8,6 +8,7 @@ using ATG.Serialization;
 using ATG.UI;
 using ATG.Update;
 using ATG.Views;
+using DG.Tweening;
 using UnityEngine;
 
 namespace ATG.MouthTrainer
@@ -36,6 +37,7 @@ namespace ATG.MouthTrainer
             _mouthViewInstance = mouthViewFactory.Create(_inputService);
             _cameraViewInstance = cameraViewFactory.Create(_inputService, _mouthViewInstance);
             
+            DOTween.Init();
         }
 
         private void Start()
